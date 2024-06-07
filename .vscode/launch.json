@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/carlo/OneDrive/Área de Trabalho/Porgramação/Projetos Geral/Crud",
-      "program": "c:/Users/carlo/OneDrive/Área de Trabalho/Porgramação/Projetos Geral/Crud/build/Debug/outDebug",
+      "cwd": "c:/Users/carlo/OneDrive/Área de Trabalho/Importante/Porgramação/Projetos Geral/Projetos Prontos/Crud em C",
+      "program": "c:/Users/carlo/OneDrive/Área de Trabalho/Importante/Porgramação/Projetos Geral/Projetos Prontos/Crud em C/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

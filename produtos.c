@@ -20,11 +20,15 @@ int lerProdutos(Produto produtos[]) {
     FILE *arquivo;
     int i = 0;
 
-    arquivo = fopen("produtos.csv", "r");
+    arquivo = fopen("produtos.csv", "r, ccs=UTF-8");
     if (arquivo == NULL) {
         wprintf(L"Erro ao abrir o arquivo.\n");
-        exit(1);
+        return 0; // Retorna 0 se o arquivo não puder ser aberto
     }
+
+    // Ignora a primeira linha do cabeçalho
+    wchar_t linha[200];
+    fgetws(linha, 200, arquivo);
 
     while (fwscanf(arquivo, L"%d,%49[^,],%f,%d\n", &produtos[i].codigo, produtos[i].nome, &produtos[i].preco, &produtos[i].quantidade) == 4) {
         i++;
@@ -38,29 +42,46 @@ int lerProdutos(Produto produtos[]) {
 void escreverProdutos(Produto produtos[], int numProdutos) {
     FILE *arquivo;
 
-    arquivo = fopen("produtos.csv", "w");
+    arquivo = fopen("produtos.csv", "w, ccs=UTF-8");
     if (arquivo == NULL) {
         wprintf(L"Erro ao abrir o arquivo.\n");
         exit(1);
     }
 
+    // Adicionar cabeçalho ao CSV usando ponto e vírgula como separador
+    fwprintf(arquivo, L"Código;Nome;Preço;Quantidade\n");
+
     for (int i = 0; i < numProdutos; i++) {
-        fwprintf(arquivo, L"%d,%ls,%.2f,%d\n", produtos[i].codigo, produtos[i].nome, produtos[i].preco, produtos[i].quantidade);
+        // Usar ponto e vírgula como separador para os campos dos produtos
+        fwprintf(arquivo, L"%d;%ls;%.2f;%d\n", produtos[i].codigo, produtos[i].nome, produtos[i].preco, produtos[i].quantidade);
     }
 
     fclose(arquivo);
+}
+
+// Função para limpar o buffer de entrada
+void limparBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
 }
 
 // Função para adicionar um novo produto
 void adicionarProduto(Produto produtos[], int *numProdutos) {
     wprintf(L"Digite o código do produto: ");
     scanf("%d", &produtos[*numProdutos].codigo);
+    limparBuffer(); // Limpa o buffer de entrada
+
     wprintf(L"Digite o nome do produto: ");
-    scanf("%ls", produtos[*numProdutos].nome);
+    fgetws(produtos[*numProdutos].nome, TAM_NOME, stdin);
+    produtos[*numProdutos].nome[wcslen(produtos[*numProdutos].nome) - 1] = L'\0'; // Remove o '\n' do final
+
     wprintf(L"Digite o preço do produto: ");
     scanf("%f", &produtos[*numProdutos].preco);
+    limparBuffer(); // Limpa o buffer de entrada
+
     wprintf(L"Digite a quantidade do produto: ");
     scanf("%d", &produtos[*numProdutos].quantidade);
+    limparBuffer(); // Limpa o buffer de entrada
 
     (*numProdutos)++;
 }
@@ -81,16 +102,23 @@ void editarProduto(Produto produtos[], int numProdutos) {
 
     wprintf(L"Digite o código do produto a ser editado: ");
     scanf("%d", &codigo);
+    limparBuffer(); // Limpa o buffer de entrada
 
     indice = buscarProduto(produtos, numProdutos, codigo);
 
     if (indice != -1) {
         wprintf(L"Digite o novo nome do produto: ");
-        scanf("%ls", produtos[indice].nome);
+        fgetws(produtos[indice].nome, TAM_NOME, stdin);
+        produtos[indice].nome[wcslen(produtos[indice].nome) - 1] = L'\0'; // Remove o '\n' do final
+
         wprintf(L"Digite o novo preço do produto: ");
         scanf("%f", &produtos[indice].preco);
+        limparBuffer(); // Limpa o buffer de entrada
+
         wprintf(L"Digite a nova quantidade do produto: ");
         scanf("%d", &produtos[indice].quantidade);
+        limparBuffer(); // Limpa o buffer de entrada
+
         wprintf(L"Produto editado com sucesso!\n");
     } else {
         wprintf(L"Produto não encontrado.\n");
@@ -103,6 +131,7 @@ void excluirProduto(Produto produtos[], int *numProdutos) {
 
     wprintf(L"Digite o código do produto a ser excluído: ");
     scanf("%d", &codigo);
+    limparBuffer(); // Limpa o buffer de entrada
 
     indice = buscarProduto(produtos, *numProdutos, codigo);
 
@@ -136,6 +165,7 @@ int main() {
         wprintf(L"0. Sair\n");
         wprintf(L"Escolha uma opção: ");
         scanf("%d", &opcao);
+        limparBuffer(); // Limpa o buffer de entrada
 
         switch (opcao) {
             case 1:
